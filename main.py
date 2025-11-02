@@ -4,7 +4,6 @@ from db import getDB
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse,RedirectResponse
 
-
 from fastapi.templating import Jinja2Templates
 templates = Jinja2Templates(directory="templates")
 
@@ -18,30 +17,44 @@ app = FastAPI()
 app.include_router(upload_router, prefix="/api") 
 app.include_router(db_router, prefix="/api")
 
+#use session middleware for session mamagement
+from starlette.middleware.sessions import SessionMiddleware
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="your-secret-key",
+	max_age=None, #86400,  # 1 day
+    same_site="lax",  # Options: 'lax', 'strict', 'none'
+    https_only=False,  # Set to True in production with HTTPS,
+)
+
+#example of using dependency function for login check
+def get_current_user(request: Request):
+	user_id = request.session.get("user")
+	#for not-login user, user_id will be None
+	return user_id
+
+def get_current_role(request: Request):
+	return request.session.get("role")
+	
+#example of using lamdba function to check role
+def checkRole(requiredRole:str):
+	def checker(request: Request):
+		user_role = request.session.get("role")
+		if user_role == requiredRole:
+			return True
+		else:
+			raise HTTPException(status_code=401, detail="Not authenticated")
+	return checker
+	
+
 @app.get("/")
-async def root(request:Request,conn=Depends(getDB)):
-	#產生回應內容的程式
+async def root(request:Request,conn=Depends(getDB),user:str=Depends(get_current_user)):
+	if user is None:
+		return RedirectResponse(url="/loginForm.html", status_code=302)
+
+	myRole = get_current_role(request)
 	myList= await posts.getList(conn)
-	return templates.TemplateResponse("postList.html", {"request":request,"items": myList})
-
-	#return myList
-	#return HTMLResponse(content="Hello World", status_code=200)
-
-@app.get("/file/{p:path}")  #http://localhost/file/a/b/c/123.jpg
-async def getPath(p: str):  #p  “a/b/c/123.jpg”
-	return {"yourPath": p}
-
-@app.get("/url/")  #http://localhost/url/?a=2&d=999
-async def getParam(a: int, b:int=5, c:str | None=None): #注意有預設值與沒有的差異
-	#a:必須要提供(不然報錯)
-	#b:網址參數沒提供時，以預設值0帶入
-	#c:可有可無，未提供時  None/null
-	#d:忽略
-	return {"Aa": a, "Bb":b , "Cc":c }
-
-@app.get("/jump")
-def redirect():
-		return RedirectResponse(url="/", status_code=302)
+	return templates.TemplateResponse("postList.html", {"request":request,"items": myList,"role": myRole})
 
 @app.get("/read/{id}")
 async def readPost(request:Request, id:int,conn=Depends(getDB)):
@@ -49,8 +62,9 @@ async def readPost(request:Request, id:int,conn=Depends(getDB)):
 	return templates.TemplateResponse("postDetail.html", {"request":request,"post": postDetail})
 
 @app.get("/delete/{id}")
-async def delPost(request:Request, id:int,conn=Depends(getDB)):
-	postDetail = await posts.deletePost(conn,id)
+#only admin can call this
+async def delPost(request:Request, id:int,conn=Depends(getDB),role=Depends(checkRole("admin"))):
+	await posts.deletePost(conn,id)
 	return RedirectResponse(url="/", status_code=302)
 
 @app.post("/addPost")
@@ -65,5 +79,30 @@ async def addPost(
 	print(2)
 	return RedirectResponse(url="/", status_code=302)
 
+@app.get("/logout")
+async def logout(request: Request):
+	request.session.clear()
+	return RedirectResponse(url="/loginForm.html")
+
+@app.post("/login") #receive login data from form post
+async def login(
+	request: Request,
+	username: str = Form(...),
+	password: str = Form(...),
+):
+	#make your own credential check
+	sql="select ....." #you can use db select to check id/password
+
+	#the code below is just for demonstration
+	if username=='user' and password == 'pass':
+		request.session["user"] = username
+		request.session["role"] = "user"
+	elif username=='admin' and password == 'pass':
+		request.session["user"] = username
+		request.session["role"] = "admin"
+	else:
+		request.session.clear()
+		return HTMLResponse("Invalid credentials <a href='/loginForm.html'>login again</a>", status_code=401)
+	return RedirectResponse(url="/", status_code=302)
 
 app.mount("/", StaticFiles(directory="www"))
