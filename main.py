@@ -1,6 +1,5 @@
 # main.py
 from fastapi import FastAPI, Depends, Request, Form
-from db import getDB
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse,RedirectResponse
 
@@ -9,7 +8,8 @@ templates = Jinja2Templates(directory="templates")
 
 from routes.upload import router as upload_router
 from routes.dbQuery import router as db_router
-import posts
+from model.db import getDB
+import model.posts as posts
 
 # Include the router
 app = FastAPI()

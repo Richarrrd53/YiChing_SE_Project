@@ -1,5 +1,5 @@
 from fastapi import APIRouter,Depends
-from db import getDB
+from model.db import getDB
 router = APIRouter()
 
 @router.get("/getUsers")

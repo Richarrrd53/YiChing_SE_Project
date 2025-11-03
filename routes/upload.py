@@ -5,8 +5,8 @@ from fastapi.responses import HTMLResponse,RedirectResponse
 
 import os
 import re
-import posts
-from db import getDB
+import model.posts as posts
+from model.db import getDB
 
 #使用APIRouter來定義route, 再從main.py中引入
 router = APIRouter()
