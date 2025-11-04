@@ -13,9 +13,16 @@
 <ol>
 	{% for item in items %}
 	<li>
+	<!-- 
 	<a href="/read/{{item.id}}"> {{ item.title }}</a> 
+	-->
+	<button type="button" onclick="readPost({{item.id}})">
+	{{ item.title }}
+	</button>
 	{% if role == 'admin' %}
-		<a href="/delete/{{item.id}}">刪</a>
+	<button type="button" onclick="delPost({{item.id}})">
+	刪
+	</button>
 	{% endif %}
 	</li>
 	{% endfor %}

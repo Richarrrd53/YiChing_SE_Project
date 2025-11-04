@@ -52,9 +52,17 @@ async def root(request:Request,conn=Depends(getDB),user:str=Depends(get_current_
 	if user is None:
 		return RedirectResponse(url="/loginForm.html", status_code=302)
 
+	#myRole = get_current_role(request)
+	#myList= await posts.getList(conn)
+	return templates.TemplateResponse("home.html", {"request":request})
+	#return templates.TemplateResponse("postList.html", {"request":request,"items": myList,"role": myRole})
+
+@app.get("/readList")
+async def root(request:Request,conn=Depends(getDB),user:str=Depends(get_current_user)):
 	myRole = get_current_role(request)
 	myList= await posts.getList(conn)
 	return templates.TemplateResponse("postList.html", {"request":request,"items": myList,"role": myRole})
+
 
 @app.get("/read/{id}")
 async def readPost(request:Request, id:int,conn=Depends(getDB)):
@@ -65,7 +73,7 @@ async def readPost(request:Request, id:int,conn=Depends(getDB)):
 #only admin can call this
 async def delPost(request:Request, id:int,conn=Depends(getDB),role=Depends(checkRole("admin"))):
 	await posts.deletePost(conn,id)
-	return RedirectResponse(url="/", status_code=302)
+	return RedirectResponse(url="/readList", status_code=302)
 
 @app.post("/addPost")
 async def addPost(
@@ -76,7 +84,7 @@ async def addPost(
 	):
 
 	postDetail = await posts.addPost(conn,title,content)
-	return RedirectResponse(url="/", status_code=302)
+	return RedirectResponse(url="/readList", status_code=302)
 
 @app.get("/logout")
 async def logout(request: Request):
