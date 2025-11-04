@@ -1,0 +1,31 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script language="javascript">
+
+function loadURL(URL) {
+	//向URL發出request
+	fetch(URL,{
+		method: 'GET', // or 'POST'
+	})
+	.then(function(res){ //fetch的callback function，傳回值是promise物件: res
+		//將res的內容轉為文字，傳給下一個Callback function
+		return res.text();
+	})
+	.then(function(data){ //下一個callback function，參數data是上一個callback傳進來的文字
+		
+		//找到要顯示內容的div
+		let div = document.getElementById('main');
+		//將傳進來的文字放進div中
+		div.innerHTML=data;
+	})
+}
+</script>
+</head>
+
+<body >
+<p><a href="testPage.html">使用link載入頁面</a> <button onclick="loadURL('testPage.html')">使用fetch載入頁面</button> </p>
+<hr />
+<div id="main"><h1>This is the main page.</h1></div>
+
+
+</body></html>

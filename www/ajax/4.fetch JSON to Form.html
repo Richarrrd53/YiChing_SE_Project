@@ -1,0 +1,34 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script language="javascript">
+
+function loadData() {
+	id = document.getElementById('postID').value;
+	URL='/readPostJson/' + id; //use URL to send id
+	//向URL發出request
+	fetch(URL)
+	.then(function(res){ //fetch的callback function，傳回值是promise物件: res
+		//將res的內容轉為JSON物件，傳給下一個Callback function
+		return res.json();
+	})
+	.then(function(json){ //下一個callback function，參數data是上一個callback傳進來的物件
+		console.log(json);
+		document.getElementById('title').value = json['title'];
+		document.getElementById('content').value = json['content'];
+	})
+}
+
+</script>
+</head>
+
+<body >
+<button onclick="loadData()">Load</button>
+<hr>
+enter post ID:<input type="text" id="postID" />
+<hr/>
+loaded data:
+<form >
+title: <input id="title" name='title' type="text"  /> <br>
+content: <input id="content" name='content' type="text"  /> <br>
+</form>
+</body></html>

@@ -1,0 +1,42 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script language="javascript">
+
+function loadData() {
+	URL='/getPostsJson';
+	//向URL發出request
+	fetch(URL)
+	.then(function(res){ //fetch的callback function，傳回值是promise物件: res
+		//將res的內容轉為JSON物件，傳給下一個Callback function
+		return res.json();
+	})
+	.then(function(json){ //下一個callback function，參數data是上一個callback傳進來的物件
+		console.log(json);
+		//將傳進來的資料放進div中
+		let data= "";
+		for (let record of json) {
+			//console.log(record);
+			for (let field in record) {
+				//console.log(field);
+				data += field + ":" +record[field]+",";
+			}
+			data += "<br/>";
+		}
+		//找到要顯示內容的div
+		let div = document.getElementById('main');
+		div.innerHTML=data;
+	})
+}
+
+</script>
+</head>
+
+<body >
+<form>
+<input type="button" value="load JSON" onClick="loadData()">
+</form>
+<hr />
+<div id="main"><h1>This is the main page.</h1></div>
+
+
+</body></html>

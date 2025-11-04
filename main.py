@@ -36,7 +36,7 @@ def get_current_user(request: Request):
 def get_current_role(request: Request):
 	return request.session.get("role")
 	
-#example of using lamdba function to check role
+#example of using function wrapper to check role
 def checkRole(requiredRole:str):
 	def checker(request: Request):
 		user_role = request.session.get("role")
@@ -76,7 +76,6 @@ async def addPost(
 	):
 
 	postDetail = await posts.addPost(conn,title,content)
-	print(2)
 	return RedirectResponse(url="/", status_code=302)
 
 @app.get("/logout")
@@ -104,5 +103,15 @@ async def login(
 		request.session.clear()
 		return HTMLResponse("Invalid credentials <a href='/loginForm.html'>login again</a>", status_code=401)
 	return RedirectResponse(url="/", status_code=302)
+
+@app.get("/getPostsJson")
+async def getPostsJson(request:Request,conn=Depends(getDB)):
+	myList= await posts.getList(conn)
+	return myList
+
+@app.get("/readPostJson/{id}")
+async def readPostJson(request:Request, id:int,conn=Depends(getDB)):
+	postDetail = await posts.getPost(conn,id)
+	return postDetail
 
 app.mount("/", StaticFiles(directory="www"))
