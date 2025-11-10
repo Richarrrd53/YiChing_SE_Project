@@ -1,0 +1,233 @@
+﻿<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+
+<body >
+<fieldset>
+	<legend>app-1</legend>
+<div id="app-1">
+  <input type="text" v-Model='txt'>
+  <span >{{txt}}</span>
+</div>
+</fieldset>
+
+<fieldset>
+	<legend>app-2</legend>
+<div id="app-2">
+  <span v-bind:title="message">
+    Hover your mouse over me for a few seconds
+    to see my dynamically bound title!
+  </span>
+</div>
+</fieldset>
+
+<fieldset>
+	<legend>app-3</legend>
+<div id="app-3">
+  <span v-if="seen">Now you see me</span>
+	<button v-on:click='toggleInside'>切換</button>
+</div>
+</fieldset>
+
+<fieldset>
+	<legend>appImg</legend>
+<div id="appImg">
+  {{ message }}
+  <input type="text" v-Model='title'>
+	<div v-if="title == pwd">錯誤</div>
+	<img v-else v-bind:width="title" v-bind:src="img">
+<button v-on:click="toggleImg">next img</button>
+</div>
+</fieldset>
+
+
+<fieldset>
+	<legend>app-4</legend>
+<div id="app-4">
+  <ol>
+    <li v-for="todo in todos">
+      {{ todo.text }} {{todo.status}}
+    </li>
+  </ol>
+</div>
+</fieldset>
+
+<fieldset>
+	<legend>app-5</legend>
+<div id="app-5">
+  <p>{{ message }}</p>
+  <button v-on:click="reverseMessage">Reverse Message</button>
+</div>
+</fieldset>
+
+<fieldset>
+	<legend>app-6</legend>
+<div id="app-6">
+  <p>{{ message }}</p>
+  <input v-model="message">
+<button v-on:click="loadData">load json to app-6 </button>
+  	<div v-for="(value, key, index) in dat">
+		{{ index }} -- {{ key }}: {{ value }}
+	<br>
+<!--
+	<div v-for="value in dat">
+	  <ol>
+	{{ value }}
+	  </ol>
+-->
+	</div>
+
+</div>
+</fieldset>
+
+<fieldset>
+	<legend>app-7</legend>
+<div id="app-7">
+  <ol>
+    <!--
+      Now we provide each todo-item with the todo object
+      it's representing, so that its content can be dynamic.
+      We also need to provide each component with a "key",
+      which will be explained later.
+    -->
+    <todo-item
+      v-for="item in groceryList"
+      v-bind:todo="item"
+      v-bind:key="item.id">
+    </todo-item>
+
+    <todo-item
+      v-for="item in groceryList1"
+      v-bind:todo="item">
+    </todo-item>
+	
+    <todo-item
+      v-for="item in groceryList2"
+      v-bind:todo="item">
+    </todo-item>
+  </ol>
+</div>
+</fieldset>
+
+<script type="text/javascript">
+const { createApp, ref, reactive, onMounted } = Vue;
+
+// app-1
+createApp({
+  setup() {
+    const txt = ref('');
+    return { txt };
+  }
+}).mount('#app-1');
+
+// app-2
+createApp({
+  setup() {
+    const message = ref('You loaded this page on ' + new Date().toLocaleString());
+    return { message };
+  }
+}).mount('#app-2');
+
+// app-3
+createApp({
+  setup() {
+    const seen = ref(true);
+    const toggleInside = () => { seen.value = !seen.value };
+    return { seen, toggleInside };
+  }
+}).mount('#app-3');
+
+// appImg
+createApp({
+  setup() {
+    const message = ref('Hello Vue!');
+    const title = ref(98);
+    const pwd = ref(1234);
+    const imgList = ["img/dog.jfif", "img/dog1.webp", "img/dog2.webp"];
+    const idx = ref(0);
+    const img = ref(imgList[idx.value]);
+
+    const toggleImg = () => {
+      idx.value = (idx.value + 1) % imgList.length;
+      img.value = imgList[idx.value];
+    };
+
+    return { message, title, pwd, img, toggleImg };
+  }
+}).mount('#appImg');
+
+// app-4
+createApp({
+  setup() {
+    const todos = ref([
+      { text: 'Learn JavaScript', status: "ok" },
+      { text: 'Learn Vue', status: "failed" },
+      { text: 'Build something awesome', status: "not yet" },
+      { text: 'New item' }
+    ]);
+    return { todos };
+  }
+}).mount('#app-4');
+
+// app-5
+createApp({
+  setup() {
+    const message = ref('Hello Vue.js!');
+    const reverseMessage = () => {
+      message.value = message.value.split('').reverse().join('');
+    };
+    return { message, reverseMessage };
+  }
+}).mount('#app-5');
+
+// app-6
+createApp({
+  setup() {
+    const message = ref('Hello Vue!');
+    const dat = ref([]);
+
+    const loadData = () => {
+      fetch('test.json')
+        .then(res => res.json())
+        .then(json => {
+          dat.value = json;
+        });
+    };
+
+    return { message, dat, loadData };
+  }
+}).mount('#app-6');
+
+// app-7 with component
+const app7 = createApp({
+  setup() {
+    const groceryList = ref([
+      { id: 0, text: 'Vegetables' },
+      { id: 1, text: 'Cheese' },
+      { id: 2, text: 'Whatever else humans are supposed to eat' }
+    ]);
+    const groceryList1 = ref([
+      { text: 'John' },
+      { text: 'Jack' },
+      { text: 'Jordan' }
+    ]);
+    const groceryList2 = ref([
+      { text: 'Apple' },
+      { text: 'Banana' },
+      { text: 'Orange' }
+    ]);
+    return { groceryList, groceryList1, groceryList2 };
+  }
+});
+
+app7.component('todo-item', {
+  props: ['todo'],
+  template: '<li>{{ todo.text }}</li>'
+});
+
+app7.mount('#app-7');
+</script>
+
+
+</body></html>

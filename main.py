@@ -54,7 +54,8 @@ async def root(request:Request,conn=Depends(getDB),user:str=Depends(get_current_
 
 	#myRole = get_current_role(request)
 	#myList= await posts.getList(conn)
-	return templates.TemplateResponse("home.html", {"request":request})
+	#return templates.TemplateResponse("home.html", {"request":request})
+	return RedirectResponse(url="/homeVue.html", status_code=302)
 	#return templates.TemplateResponse("postList.html", {"request":request,"items": myList,"role": myRole})
 
 @app.get("/readList")

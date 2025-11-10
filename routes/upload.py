@@ -15,7 +15,7 @@ router = APIRouter()
 @router.post("/upload")
 async def upload_file(
 	uploadedFile: UploadFile = File(...), 
-	msg:str=Form(...),
+	msg:str=Form(...), #this is the postID
 	conn=Depends(getDB) ):
 	
 	contents = await uploadedFile.read()
@@ -24,6 +24,7 @@ async def upload_file(
 	#參考下面的safeFilename()
 	with open(f"www/uploads/{uploadedFile.filename}", "wb") as f:
 		f.write(contents)
+	print(msg)
 	await posts.setUploadFile(conn, msg,uploadedFile.filename)
 	return RedirectResponse(url=f"/read/{msg}", status_code=302)
 
