@@ -8,24 +8,30 @@
 	<legend>app-1</legend>
 <div id="app-1">
   <input type="text" v-Model='txt'>
-  <span >{{txt}}</span>
+  <select v-model="val">
+  <option value='1'>1</option>
+  <option value='2'>2</option>
+  </select>
+  <span >{{txt}} {{ parseInt(val)+1 }}</span>
 </div>
 </fieldset>
 
 <fieldset>
 	<legend>app-2</legend>
 <div id="app-2">
-  <span v-bind:title="message">
+  <span :style="{ color: message}">
     Hover your mouse over me for a few seconds
     to see my dynamically bound title!
   </span>
+  <a v-bind:href="message" target="_blank">click</a>
+  <input type="text" v-Model='message'>
 </div>
 </fieldset>
 
 <fieldset>
 	<legend>app-3</legend>
 <div id="app-3">
-  <span v-if="seen">Now you see me</span>
+  <span v-if="role=='admin'">Now you see me</span>
 	<button v-on:click='toggleInside'>切換</button>
 </div>
 </fieldset>
@@ -36,8 +42,8 @@
   {{ message }}
   <input type="text" v-Model='title'>
 	<div v-if="title == pwd">錯誤</div>
-	<img v-else v-bind:width="title" v-bind:src="img">
-<button v-on:click="toggleImg">next img</button>
+	<img v-else :width="title" v-bind:src="img">
+<button @mouseenter="toggleImg">next img</button>
 </div>
 </fieldset>
 
@@ -45,11 +51,11 @@
 <fieldset>
 	<legend>app-4</legend>
 <div id="app-4">
-  <ol>
+  <ul>
     <li v-for="todo in todos">
-      {{ todo.text }} {{todo.status}}
+      {{ todo.text }} [{{todo.status}}]
     </li>
-  </ol>
+  </ul>
 </div>
 </fieldset>
 
@@ -114,12 +120,14 @@
 const { createApp, ref, reactive, onMounted } = Vue;
 
 // app-1
-createApp({
+const app1=createApp({
   setup() {
     const txt = ref('');
-    return { txt };
+	const val = ref(0);
+    return { txt, val };
   }
-}).mount('#app-1');
+})
+app1.mount('#app-1');
 
 // app-2
 createApp({
@@ -134,6 +142,12 @@ createApp({
   setup() {
     const seen = ref(true);
     const toggleInside = () => { seen.value = !seen.value };
+
+/*
+function toggleInside() {
+ seen.value = !seen.value 
+ };
+*/
     return { seen, toggleInside };
   }
 }).mount('#app-3');

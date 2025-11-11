@@ -52,8 +52,8 @@ async def root(request:Request,conn=Depends(getDB),user:str=Depends(get_current_
 	if user is None:
 		return RedirectResponse(url="/loginForm.html", status_code=302)
 
-	#myRole = get_current_role(request)
-	#myList= await posts.getList(conn)
+	myRole = get_current_role(request)
+	myList= await posts.getList(conn)
 	#return templates.TemplateResponse("home.html", {"request":request})
 	return RedirectResponse(url="/homeVue.html", status_code=302)
 	#return templates.TemplateResponse("postList.html", {"request":request,"items": myList,"role": myRole})
