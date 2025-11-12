@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>註冊</title>
+</head>
+<body>
+    <h2>註冊...</h2>
+    <form action="/regist" method="post">
+        <label for="username">Username</label>
+        <input required type="text" name="username" id="username" placeholder="請輸入您的使用者名稱..."><br>
+        <label for="password">Password</label>
+        <input required type="text" name="password" id="password" placeholder="請輸入您的密碼..."><br>
+        <select name="role" id="role">
+            <option value="" disabled selected>選擇您的身分</option>
+            <option value="client">委託人 (我要發案)</option>
+            <option value="freelancer">接案人 (我要接案)</option>
+        </select><br>
+        <input type="submit">
+    </form>
+</body>
+</html>

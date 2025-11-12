@@ -1,5 +1,5 @@
 # main.py
-from fastapi import FastAPI, Depends, Request, Form
+from fastapi import FastAPI, Depends, Request, Form, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse,RedirectResponse
 
@@ -10,6 +10,9 @@ from routes.upload import router as upload_router
 from routes.dbQuery import router as db_router
 from model.db import getDB
 import model.posts as posts
+import model.users as users
+import security
+
 
 # Include the router
 app = FastAPI()
@@ -21,7 +24,7 @@ app.include_router(db_router, prefix="/api")
 from starlette.middleware.sessions import SessionMiddleware
 app.add_middleware(
     SessionMiddleware,
-    secret_key="your-secret-key",
+    secret_key="yiching1218",
 	max_age=None, #86400,  # 1 day
     same_site="lax",  # Options: 'lax', 'strict', 'none'
     https_only=False,  # Set to True in production with HTTPS,
@@ -94,24 +97,54 @@ async def logout(request: Request):
 
 @app.post("/login") #receive login data from form post
 async def login(
-	request: Request,
+	req: Request,
 	username: str = Form(...),
 	password: str = Form(...),
+	conn = Depends(getDB)
 ):
-	#make your own credential check
-	sql="select ....." #you can use db select to check id/password
+	password = password.strip()
+	user_from_db = await users.get_user_by_username(conn, username)
 
-	#the code below is just for demonstration
-	if username=='user' and password == 'pass':
-		request.session["user"] = username
-		request.session["role"] = "user"
-	elif username=='admin' and password == 'pass':
-		request.session["user"] = username
-		request.session["role"] = "admin"
+	if not user_from_db:
+		req.session.clear()
+		return HTMLResponse("使用者不存在，<a href='/loginForm.html'>再試一次</a>", status_code=401)
+	
+	is_password_correct = security.verify_pwd(password, user_from_db["hashed_password"])
+	print(is_password_correct)
+
+	if not is_password_correct:
+		req.session.clear()
+		return HTMLResponse("密碼錯誤，<a href='/loginForm.html'>再試一次</a>", status_code=401)
+	
+	req.session["user"] = user_from_db["username"]
+	req.session["role"] = user_from_db["role"]
+
+	if user_from_db["role"] == "client":
+		print(f"{username} 已登入，登入身分：委託人")
 	else:
-		request.session.clear()
-		return HTMLResponse("Invalid credentials <a href='/loginForm.html'>login again</a>", status_code=401)
+		print(f"{username} 已登入，登入身分：接案人")
+		
+	
 	return RedirectResponse(url="/", status_code=302)
+
+@app.post("/regist")
+async def registUser(req: Request, conn=Depends(getDB), username: str=Form(...), password: str=Form(...), role: str=Form(...)):
+	exsiting_user = await users.get_user_by_username(conn, username)
+	if exsiting_user:
+		return HTMLResponse("此使用者已註冊過，<a href='/loginForm.html'>立刻登入</a>", status_code=401)
+
+	if role not in ['client', 'freelancer']:
+		return HTMLResponse("身分錯誤，<a href='/regist.html'>再試一次</a>", status_code=401)
+	
+	hashed_password = security.get_pwd_hash(password)
+
+	try:
+		await users.create_user(conn, username, hashed_password, role)
+		return HTMLResponse("註冊成功，<a href='/loginForm.html'>立刻登入</a>", status_code=401)
+	except Exception as e:
+		print(f": {e}")
+		return HTMLResponse("註冊失敗，<a href='/regist.html'>再試一次</a>", status_code=401)
+
 
 @app.get("/getPostsJson")
 async def getPostsJson(request:Request,conn=Depends(getDB)):
