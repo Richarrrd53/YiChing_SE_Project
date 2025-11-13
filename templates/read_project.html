@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>委託詳情</title>
+    <link rel="stylesheet" href="/css/style.css"> <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>{{project.title}}</h1>
+        
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; background: var(--bg-pink-light); padding: 1rem; border-radius: 12px;">
+            <span><strong>委託人：</strong> {{ project.client_username }}</span>
+            <span><strong>發布日期：</strong> {{ project.create_time.strftime('%Y-%m-%d') }}</span>
+            <span><strong>截止日期：</strong> {{ project.deadline_date.strftime('%Y-%m-%d') if project.deadline_date else 'N/A' }}</span>
+            <span><span class="status-pill link-{{project.status}}">{{ project.status_text }}</span></span>
+        </div>
+
+        {% if project.accepted_freelancer_username %}
+            <p style="font-weight: bold; font-size: 1.1rem;"><strong>已承接：</strong> {{ project.accepted_freelancer_username }}</p>
+        {% endif %}
+
+        <div style="margin: 1.5rem 0; display: flex; gap: 10px;">
+            {% if role == 'client' %}
+                <a href="/" class="btn btn-secondary">返回列表</a>
+                {% if project.status == 'open' or project.status == 'in_progress' %}
+                    <a href="/page/edit/{{project.id}}" class="btn btn-primary">編輯專案</a>
+                {% endif %}
+            {% elif role == 'freelancer' %}
+                <a href="/" class="btn btn-secondary">返回市場</a>
+                <a href="/page/my-jobs" class="btn btn-secondary">返回我的承包</a>
+            {% endif %}
+        </div>
+
+        <hr>
+
+        {% if role == 'client' and project.status == 'in_progress' %}
+            <div style="background: var(--bg-pink-light); padding: 1rem; border-radius: 12px;">
+                <h3>專案進行中</h3>
+                <p>您已同意 {{ project.accepted_freelancer_username }} 接案，請等候接案人交付檔案。</p>
+            </div>
+
+        {% elif role == 'client' and project.status == 'delivered' %}
+            <div style="background: var(--bg-pink-light); padding: 1rem; border-radius: 12px;">
+                <h3>結案管理</h3>
+                <p>接案人 ({{ project.accepted_freelancer_username }}) 已交付檔案，請下載審核：</p>
+                <a href="/{{ project.delivery_file_path }}" target="_blank" class="btn btn-primary">下載結案檔案</a>
+                <div style="margin-top: 1rem; display: flex; gap: 10px;">
+                    <a href="/complete-project/{{project.id}}" class="btn btn-primary" style="background-color: var(--status-green);">接受並結案</a>
+                    <a href="/reject-file/{{project.id}}" class="btn btn-danger">退件</a>
+                </div>
+            </div>
+
+        {% elif role == 'client' and project.status == 'rejected'%}
+            <div style="background: var(--status-red); color: white; padding: 1rem; border-radius: 12px;">
+                <h3>專案已退件</h3>
+                <p>您已退件 {{ project.accepted_freelancer_username }} 的檔案，請等候接案人重新交付。</p>
+            </div>
+            
+        {% elif role == 'client' and project.status == 'completed'%}
+            <div style="background: var(--status-gray); color: white; padding: 1rem; border-radius: 12px;">
+                <h3>🎉 恭喜結案！</h3>
+                <p>接案人 ({{ project.accepted_freelancer_username }}) 已交付檔案：</p>
+                <a href="/{{ project.delivery_file_path }}" target="_blank" class="btn btn-secondary">下載結案檔案</a>
+            </div>
+        {% endif %}
+
+
+        <div>
+            <strong>預算：</strong> <span style="font-size: 1.2rem; font-weight: bold;">${{ project.budget }}</span>
+        </div>
+        <div>
+            <strong>需求描述：</strong>
+            <p style="line-height: 1.6;">{{ project.content | replace("\n", "<br>") | safe }}</p>
+        </div>
+        <hr>
+
+        {% if role == 'client' %}
+            <h3>收到的報價 ({{ bids | length }} 則)</h3>
+            {% if bids %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>接案人</th>
+                            <th>報價</th>
+                            <th>留言</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bid in bids %}
+                        <tr>
+                            <td>{{ bid.freelancer_username }}</td>
+                            <td>${{ bid.bid_amount }}</td>
+                            <td>{{ bid.message }}</td>
+                            <td>
+                                {% if project.status == 'open' %}
+                                    <a href="/bids/accept/{{bid.id}}" class="btn btn-primary" style="padding: 5px 10px;">接受報價</a>
+                                {% elif bid.status == 'accepted' %}
+                                    <span class="status-pill link-open">已接受</span>
+                                {% elif bid.status == 'rejected' %}
+                                    <span class="status-pill link-rejected">已拒絕</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>目前尚無報價。</p>
+            {% endif %}
+
+        {% elif role == 'freelancer' and project.status == 'open'%}
+            {% if is_bid_exist == False %}
+                <h3>有意願承包嗎？請提出承包意願 (報價)</h3>
+                <form id="create-bid-form" action="/submit-bid/{{project.id}}" method="POST">
+                    <input type="hidden" name="project_id" value="{{ project.id }}">
+                    <div class="form-group">
+                        <label for="bid_amount">您的報價 (TWD):</label>
+                        <input type="number" id="bid_amount" name="bid_amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">留言 (告訴委託人您為什麼適合，選填):</label>
+                        <textarea id="message" name="message" rows="4"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">送出報價</button>
+                </form>
+            {% elif is_bid_exist == True and bid_status == 'pending' %}
+                <h3 style="color: var(--status-yellow);">您已提過報價，請耐心等待委託人接受。</h3>
+            {% elif is_bid_exist == True and bid_status == 'rejected' %}
+                <h3 style="color: var(--status-red);">很抱歉，委託人已拒絕你的報價，再接再厲。</h3>
+            {% endif %}
+
+        {% elif role == 'freelancer' and project.status in ['in_progress', 'rejected'] %}
+            <h3>
+                {% if project.status == 'rejected' %}
+                    委託人已退件，請重新上傳檔案
+                {% else %}
+                    委託人已接受報價，請上傳結案檔案
+                {% endif %}
+            </h3>
+            <form id="deliver-project-form" action="/deliver-file/{{project.id}}" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="delivery_file">選擇檔案 (.zip, .pdf, .jpg...):</label>
+                    <input type="file" id="delivery_file" name="delivery_file" required>
+                </div>
+                <button type="submit" class="btn btn-primary">送出檔案</button>
+            </form>
+
+        {% elif role == 'freelancer' and project.status == 'delivered' %}
+            <h3 style="color: var(--status-blue);">您已上傳結案檔案，請等待委託人審核。</h3>
+            
+        {% elif role == 'freelancer' and project.status == 'completed' %}
+            <h3 style="color: var(--status-green);">🎉 恭喜！專案已結案。</h3>
+        {% endif %}
+
+    </div>
+</body>
+</html>

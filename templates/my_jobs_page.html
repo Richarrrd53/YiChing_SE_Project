@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的承包</title>
+    <link rel="stylesheet" href="/css/style.css"> <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+		<h3>登入身分：{{ username }} <span class="status-pill role-{{role}}">{{role}}</span></h3>
+        <h1>我的承包</h1>
+        <nav class="nav">
+            <a href='/'>專案市場</a>
+            <a href='/page/my-jobs'>我的承包</a>
+            <a href='/page/history'>歷史承包紀錄</a>
+            <a href='/logout'>登出</a>
+        </nav>
+        <p>您已得標的所有專案（包含進行中、已交付、已結案）。</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>專案名稱</th>
+                    <th>委託人</th>
+                    <th>專案狀態</th>
+                    <th>預算</th>
+                    <th>截止日期</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if not items %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">您目前沒有任何承接的專案。</td>
+                </tr>
+                {% else %}
+                {% for item in items %}
+                <tr>
+                    <td><a href="/page/read/{{item.id}}"> {{ item.title }}</a></td>
+                    <td>{{ item.client_username }}</td>
+                    <td><span class="status-pill link-{{item.status}}">{{ item.status_text }}</span></td>
+                    <td>${{ item.budget }}</td>
+                    <td>{{item.deadline_date.strftime('%Y-%m-%d') if item.deadline_date else 'N/A'}}</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

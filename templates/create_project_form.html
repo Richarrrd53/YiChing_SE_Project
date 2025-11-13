@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>建立新專案</title>
+    <link rel="stylesheet" href="/css/style.css"> <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>建立新委託</h1>
+        <p>請詳細填寫您的專案需求。</p>
+        <hr>
+        <form id="create-project-form" action="/create-project" method="POST">
+            <div class="form-group">
+                <label for="title">專案標題:</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">詳細需求描述:</label>
+                <input type="hidden" id="content" name="content">
+                <textarea id="description" name="description" rows="10" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="budget">預算 (TWD):</label>
+                <input type="number" id="budget" name="budget" required>
+            </div>
+
+            <div class="form-group">
+                <label for="deadline">截止時間(天):</label>
+                <input type="number" id="deadline" name="deadline" value="30" required>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 1rem;">
+                <a href="/" class="btn btn-secondary">返回</a>
+                <button type="submit" class="btn btn-primary" onclick="document.getElementById('content').value = document.getElementById('description').value">
+                    發布委託
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

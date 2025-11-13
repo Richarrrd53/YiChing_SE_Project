@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>發生錯誤</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container" style="text-align: center;">
+        <h1 style="color: var(--status-red);">😥 喔噢，發生錯誤</h1>
+        <p style="font-size: 1.2rem;">{{ message }}</p>
+        <a href="{{ back_link }}" class="btn btn-secondary" style="margin-top: 1rem;">{{ back_text }}</a>
+    </div>
+</body>
+</html>

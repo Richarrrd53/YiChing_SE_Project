@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>確認復原？</title>
+    <link rel="stylesheet" href="/css/style.css"> <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container" style="text-align: center;">
+        <h1>確認復原？</h1>
+        <p>您確定要復原專案「<strong>{{project.title}}</strong>」嗎？</p>
+        <p>它將會回到您的專案列表中。</p>
+        <div style="display: flex; gap: 20px; justify-content: center; margin-top: 2rem;">
+            <a href='/page/history' class="btn btn-secondary">取消</a>
+            <a href='/restore-project/{{project.id}}' class="btn btn-primary">確認復原</a>
+        </div>
+    </div>
+</body>
+</html>

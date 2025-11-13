@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>登入</title>
+    <link rel="stylesheet" href="/css/style.css"> <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h2>登入您的帳號</h2>
+        <form method="POST" action="/login">
+            <div class="form-group">
+                <label for="username">使用者名稱：</label>
+                <input type="text" name="username" id="username">
+            </div>
+            <div class="form-group">
+                <label for="password">密碼：</label>
+                <input type="password" name="password" id="password" autocomplete="off">
+            </div>
+            <div>
+                <input type="checkbox" name="show_pwd" id="show_pwd">
+                <label for="show_pwd">顯示密碼</label>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 1rem;">
+                <a href="/regist.html" class="btn btn-secondary" style="width: 50%;">前往註冊</a>
+                <button type="submit" class="btn btn-primary" style="width: 50%;">登入</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("show_pwd").addEventListener("click", () => {
+                document.getElementById("password").type = document.getElementById("show_pwd").checked ? "text" : "password";
+            });
+        });
+    </script>
+</body>
+</html>

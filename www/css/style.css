@@ -1,0 +1,239 @@
+/* --- www/css/style.css --- */
+
+/* 1. 基本設定 (字型與色票) */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+
+:root {
+    --primary-pink: #F472B6; /* 亮粉紅 (主色) */
+    --primary-pink-dark: #D9468C; /* 深粉紅 (Hover) */
+    --bg-pink-light: #FFF5F9;  /* 淺粉紅 (背景) */
+    --text-dark: #594A4E;     /* 深紫棕 (文字) */
+    --border-pink: #FADBE8;    /* 粉紅 (邊框) */
+    --border-focus: #F472B6;
+    
+    /* 你的狀態顏色 */
+    --status-green: #10B981;
+    --status-yellow: #F59E0B;
+    --status-blue: #3B82F6;
+    --status-gray: #6B7280;
+    --status-red: #EF4444;
+}
+
+/* 2. 基礎樣式 */
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: var(--bg-pink-light);
+    color: var(--text-dark);
+    margin: 0;
+    padding: 2rem 1rem;
+    line-height: 1.6;
+}
+
+/* 3. 主要容器 (可愛的圓角卡片) */
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 2rem 2.5rem;
+    border-radius: 20px; /* 可愛圓角 */
+    box-shadow: 0 10px 30px rgba(230, 100, 150, 0.15);
+}
+
+/* 4. 標題與連結 */
+h1, h2, h3 {
+    color: var(--primary-pink);
+    border-bottom: 2px solid var(--border-pink);
+    padding-bottom: 0.5rem;
+}
+
+a {
+    color: var(--primary-pink);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-pink-dark);
+    text-decoration: none;
+}
+
+hr {
+    border: none;
+    height: 2px;
+    background-color: var(--border-pink);
+    margin: 2rem 0;
+}
+
+/* 5. 導覽列 */
+.nav {
+    background: var(--bg-pink-light);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.nav a {
+    display: inline-block;
+    margin-right: 1.5rem;
+    font-weight: bold;
+}
+
+/* 6. 表單 (Forms) */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem; /* 增加表單間距 */
+}
+
+.form-group {
+    margin-bottom: 0.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px; /* 可愛圓角 */
+    border: 2px solid var(--border-pink);
+    font-size: 1rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    transition: all 0.3s ease;
+    box-sizing: border-box; /* 確保 padding 不會撐爆寬度 */
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 10px rgba(244, 114, 182, 0.3);
+}
+
+/* 7. 按鈕 (Buttons) */
+.btn {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 1rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.btn-primary {
+    background-color: var(--primary-pink);
+    color: #ffffff;
+}
+.btn-primary:hover {
+    background-color: var(--primary-pink-dark);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(217, 70, 140, 0.3);
+}
+
+.btn-secondary {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+.btn-secondary:hover {
+    background-color: #e5e7eb;
+    color: #1f2937;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: var(--status-red);
+    color: #ffffff;
+}
+.btn-danger:hover {
+    background-color: #DC2626;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+/* 8. 表格 (Table) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+    border-radius: 12px; /* 圓角表格 */
+    overflow: hidden; /* 確保圓角生效 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+th, td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 2px solid var(--border-pink);
+}
+
+thead {
+    background-color: var(--bg-pink-light);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: var(--primary-pink-dark);
+}
+
+tbody tr:nth-child(even) {
+    background-color: #FFFBFD; /* 交錯粉色 */
+}
+
+tbody tr:hover {
+    background-color: var(--border-pink);
+}
+
+td a {
+    font-weight: bold;
+}
+
+/* 9. 狀態標籤 (Status Pills) */
+.status-pill {
+    padding: 4px 12px;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.role-client{ background-color: var(--primary-pink); }
+.role-freelancer{ background-color: var(--primary-pink); }
+.link-open { background-color: var(--status-green); }
+.link-in_progress { background-color: var(--status-yellow); color: #333; }
+.link-delivered { background-color: var(--status-blue); }
+.link-completed { background-color: var(--status-gray); }
+.link-rejected { background-color: var(--status-red); }
+.link-deleted { background-color: var(--status-red); }
+
+/* 10. 錯誤訊息 */
+.error-message {
+    padding: 1rem;
+    background-color: #FFF0F0;
+    color: var(--status-red);
+    border: 2px solid var(--status-red);
+    border-radius: 10px;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+
+
+
+
+
+

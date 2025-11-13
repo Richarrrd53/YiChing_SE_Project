@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>確認刪除？</title>
+    <link rel="stylesheet" href="/css/style.css"> <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container" style="text-align: center;">
+        <h1>確認刪除？</h1>
+        <p>您確定要刪除專案「<strong>{{project.title}}</strong>」嗎？</p>
+        <p style="color: var(--status-red);">此動作會將專案移至歷史封存，您之後可以復原它。</p>
+        <div style="display: flex; gap: 20px; justify-content: center; margin-top: 2rem;">
+            <a href='/' class="btn btn-secondary">取消</a>
+            <a href='/delete-project/{{project.id}}' class="btn btn-danger">確認刪除</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>編輯專案</title>
+    <link rel="stylesheet" href="/css/style.css"> <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>編輯委託專案</h1>
+        <p>您正在編輯： <strong>{{ project.title }}</strong></p>
+        <hr>
+        
+        <form class="editForm" action="/edit-project/{{project.id}}" method="POST">
+            <div class="form-group">
+                <label for="title">專案標題:</label>
+                <input type="text" id="title" name="title" value="{{ project.title }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="description">詳細需求描述:</label>
+                <input type="hidden" id="content" name="content" value="{{ project.content }}">
+                <textarea id="description" name="description" rows="10">{{ project.content }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="budget">預算 (TWD):</label>
+                <input type="number" id="budget" name="budget" value="{{ project.budget }}">
+            </div>
+
+            <div class="form-group">
+                <label for="deadline">截止時間 (天):</label>
+                <input type="number" id="deadline" name="deadline" value="{{ project.deadline }}">
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 1rem;">
+                <a href="/page/read/{{project.id}}" class="btn btn-secondary">取消</a>
+                <button type="submit" class="btn btn-primary" onclick="document.getElementById('content').value = document.getElementById('description').value">
+                    儲存編輯
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
