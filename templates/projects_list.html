@@ -24,21 +24,23 @@
                         <th>專案名稱</th>
                         <th>狀態</th>
                         <th>預算</th>
+                        <th>發布日期</th>
                         <th>截止日期</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% if not items %}
+                    {% if not project %}
                     <tr>
                         <td colspan="5" style="text-align: center;">您目前沒有任何專案。 <a href="/page/create-project">立即建立一個！</a></td>
                     </tr>
                     {% else %}
-                    {% for item in items%}
+                    {% for item in project%}
                     <tr>
                         <td><a href="/page/read/{{item.id}}">{{item.title}}</a></td>
                         <td><span class="status-pill link-{{item.status}}">{{item.status_text}}</span></td>
                         <td>${{item.budget}}</td>
+                        <td>{{item.create_time.strftime('%Y-%m-%d')}}</td>
                         <td>{{item.deadline_date.strftime('%Y-%m-%d') if item.deadline_date else 'N/A'}}</td>
                         <td>
                             {% if item.status != 'completed' and item.status != 'cancelled' %}
@@ -69,12 +71,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% if not items%}
+                    {% if not project%}
                     <tr>
                         <td colspan="4" style="text-align: center;">目前沒有任何公開的委託專案。</td>
                     </tr>
                     {% else %}
-                    {% for item in items%}
+                    {% for item in project%}
                     <tr>
                         <td><a href="/page/read/{{item.id}}">{{item.title}}</a></td>
                         <td>{{item.client_username}}</td>

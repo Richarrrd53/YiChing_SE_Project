@@ -1,7 +1,7 @@
 from psycopg_pool import AsyncConnectionPool
 from psycopg.rows import dict_row
 
-DATABASE_URL = "postgresql://neondb_owner:npg_UJSRW7QLnji3@ep-summer-cake-a1owtkqw-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+DATABASE_URL = "postgresql://neondb_owner:npg_p6s8BQenCuxI@ep-little-brook-a1j52dfs-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 
 
 _pool: AsyncConnectionPool | None = None

@@ -36,17 +36,16 @@ app.add_middleware(
     https_only=False,  # Set to True in production with HTTPS,
 )
 
-#example of using dependency function for login check
-def get_current_user(request: Request):
+
+def get_current_user(request: Request): #尋找Session中的user
     username = request.session.get("user")
-    #for not-login user, user_id will be None
     return username
 
 def get_current_role(request: Request):
     return request.session.get("role")
     
 #example of using function wrapper to check role
-def checkRole(requiredRole:str):
+def checkRole(requiredRole:str): #尋找Session中的role
     def checker(request: Request):
         user_role = request.session.get("role")
         if user_role == requiredRole:
@@ -68,7 +67,7 @@ def safeFilename(filename:str):
     safe = re.sub(r'_+', '_', safe)
     return safe[:255]
 
-def translate_status_text(status):
+def translate_status_text(status): #轉換狀態文字
     status_maps={
         "open": "開放中",
         "in_progress": "進行中",
@@ -79,26 +78,26 @@ def translate_status_text(status):
     }
     return status_maps.get(status, "未知")
 
-@app.get("/")
+@app.get("/") #根目錄
 async def roots(request:Request,conn=Depends(getDB),username:str=Depends(get_current_user)):
-    if username is None:
-        return RedirectResponse(url="/login.html", status_code=302)
+    if username is None: #如果找不到user => 還沒登入
+        return RedirectResponse(url="/login.html", status_code=302) #前往登入畫面
         
-    user = await users.get_user_by_username(conn, username)
+    user = await users.get_user_by_username(conn, username) 
     
     myRole = get_current_role(request)
     if myRole == 'client':
-        myList= await posts.get_projects_client(conn, user['id'])
+        myList= await posts.get_projects_client(conn, user['id']) #尋找目前使用者的專案
         for item in myList:
-            item["status_text"] = translate_status_text(item['status'])
-            item["deadline_date"] = item["create_time"] + timedelta(item['deadline'])
+            item["status_text"] = translate_status_text(item['status']) #轉換並存入狀態文字
+            item["deadline_date"] = item["create_time"] + timedelta(item['deadline']) #計算並存入狀態文字
     else:
-        myList = await posts.get_open_projects(conn)
+        myList = await posts.get_open_projects(conn) #尋找所有已開放的專案
         for item in myList:
-            item["deadline_date"] = item["create_time"] + timedelta(item['deadline'])
+            item["deadline_date"] = item["create_time"] + timedelta(item['deadline']) #計算並存入狀態文字
     
     
-    return templates.TemplateResponse("projects_list.html", {"request":request,"items": myList,"role": myRole, "username": username})
+    return templates.TemplateResponse("projects_list.html", {"request":request,"project": myList,"role": myRole, "username": username})
 
 @app.get("/page/create-project")
 async def create_project_page(req: Request):
@@ -190,7 +189,7 @@ async def my_jobs_list(req: Request, conn = Depends(getDB), username=Depends(get
             item["status_text"] = translate_status_text(item['status'])
             item["deadline_date"] = item["create_time"] + timedelta(item['deadline'])
             
-    return templates.TemplateResponse("my_jobs_page.html", {"request":req,"username":username,"items": project_list, "role": role})
+    return templates.TemplateResponse("my_jobs_page.html", {"request":req,"username":username,"project": project_list, "role": role})
     
 
 @app.get("/page/history")
@@ -201,7 +200,7 @@ async def history_page(req: Request, conn =Depends(getDB), username = Depends(ge
         for item in history_project:
             item["status_text"] = translate_status_text(item["status"])
             item["deadline_date"] = item["create_time"] + timedelta(item['deadline'])
-    return templates.TemplateResponse("history_page.html", {"request":req,"items": history_project,"username":username, "role": role})
+    return templates.TemplateResponse("history_page.html", {"request":req,"project": history_project,"username":username, "role": role})
 
 @app.get("/page/check-restore/{id}")
 async def check_restore(req: Request, id: int, conn = Depends(getDB), role =Depends(get_current_role)):
